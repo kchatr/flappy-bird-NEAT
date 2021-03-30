@@ -3,6 +3,7 @@ import neat
 import time
 import os
 import random
+import pickle
 
 pygame.font.init()
 
@@ -19,6 +20,7 @@ GROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "
 BACKGROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bg.png")))
 
 SCORE_FONT = pygame.font.SysFont("comicsans", 50)
+
 
 # A Bird class to make the handling of the bird and its behavior easier and efficient
 class Bird:
@@ -124,7 +126,7 @@ class Pipe:
         self.set_height() # Sets the height of the pipe and the location of it
     
     def set_height(self):
-        self.height = random.randrange(40, 450) # The height of the pipe, which is a random number between 40 and 450
+        self.height = random.randrange(50, 450) # The height of the pipe, which is a random number between 40 and 450
         self.top_pipe = self.height - self.PIPE_TOP.get_height() # If the pipe is on the top, this determines where the top of the pipe is
         self.bottom_pipe = self.height + self.SPACE # If the pipe is on the bottom, this determines where the bottom of the pipe is
 
@@ -184,11 +186,14 @@ class Base:
         window.blit(self.IMG, (self.x2, self.y))
 
 # Method to draw the game window
-def draw_window(window, bird, pipes, base, score):
+def draw_window(window, birds, pipes, base, score, cur_gen):
     window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
 
     score_display = SCORE_FONT.render(f"Score: {score}", 1, (255, 255, 255))
     window.blit(score_display, (WIN_WIDTH - 10 - score_display.get_width(), 10))
+    
+    score_display = SCORE_FONT.render(f"Gen: {cur_gen}", 1, (255, 255, 255))
+    window.blit(score_display, (10, 10))
 
     # Pipes is a list storing the top and bottom pipe, and this draws them to the game window using the previously defined draw method
     for pipe in pipes:
@@ -196,20 +201,35 @@ def draw_window(window, bird, pipes, base, score):
     
     base.draw(window) # Draw the base (the ground) using the previously defined draw method
 
-    bird.draw(window) # Draw the bird using the previously defined draw method
+    for bird in birds:
+        bird.draw(window) # Draw the bird using the previously defined draw method
 
     pygame.display.update() # Update the display
 
+CUR_GEN = 0
 # The main method which acts as a controller for the rest of the program
-def main():
-    bird = Bird(230, 350) # Initialize a bird object
+def gen_training(genomes, config):
+    global CUR_GEN
+    CUR_GEN += 1
+    cur_neural_networks = []
+    cur_genomes = []
+    birds = []
+
+    for _, g in genomes:
+        g.fitness = 0
+        neural_network = neat.nn.FeedForwardNetwork.create(g, config)
+        cur_neural_networks.append(neural_network)
+        birds.append(Bird(230, 350))
+        cur_genomes.append(g)
+        
+
     base = Base()
     pipes = [Pipe()]
     window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH)) # Initialize the window
     clock = pygame.time.Clock() # Sets the frame rate i.e. the tick rate of the game
-    user_score = 0
+    score = 0
 
-    play_game = True # A boolean variable that tracks whether the user wants to quit or continue playing
+    play_game = True # A boolean variable that tracks whether the game should continue to run
 
     # While the user still wants to play the game:
     while play_game:
@@ -219,45 +239,88 @@ def main():
             # If the user hits the X in the Pygame window, exit the game and terminate the program
             if event.type == pygame.QUIT:
                 play_game = False
+                pygame.quit() # Quit the Pygame window
+                quit() # Quit the program
+        
+        pipe_index = 0 # The index of the pipe to be inputted into the neural network
+        # If the birds list is not empty, set pipe_index to 1 (the second pipe in the list) if the bird has already passed the first pipe
+        if len(birds) > 0:
+            if len(pipes) > 1 and birds[0].x > pipes[0].x + pipes[0].PIPE_TOP.get_width():
+                pipe_index = 1
+        else:
+            run = False
+            break
+        
+        for x, bird in enumerate(birds):
+            cur_genomes[x].fitness += 0.1
+            bird.move()
+            
+            nn_output = cur_neural_networks[x].activate((bird.y, abs(bird.y - pipes[pipe_index].height), abs(bird.y - pipes[pipe_index].bottom_pipe)))
+
+            if nn_output[0] > 0.5:
+                bird.jump()
+
         
         add_pipe = False # Keeps track of whether or not to add a new pipe to the game window
         removed_pipes = [] # A list to store the pipes that need to be removed
         # Call the move method defined for each pipe object that currently exists
         # Pipes is a list storing the top and bottom pipe, and this draws them to the game window using the previously defined draw method
         for pipe in pipes:
-            if pipe.collide(bird) == True:
-                pass
-            else:
-                # If the pipe is now completely off the screen, add it to the list of pipes to be removed
-                if pipe.x + pipe.PIPE_TOP.get_width() < 0:
-                    removed_pipes.append(pipe)
-            
+            for i, bird in enumerate(birds):
+                if pipe.collide(bird) == True:
+                    cur_genomes[i].fitness -= 1
+                    birds.pop(i)
+                    cur_neural_networks.pop(i)
+                    cur_genomes.pop(i)
+
                 # If the bird has passed the pipe and the pipe has not been passed before, we need to draw a new pipe
                 if not pipe.bird_passed and pipe.x < bird.x:
                     pipe.bird_passed = True
                     add_pipe = True
+                    
+            # If the pipe is now completely off the screen, add it to the list of pipes to be removed
+            if pipe.x + pipe.PIPE_TOP.get_width() < 0:
+                removed_pipes.append(pipe)
                 
-                pipe.move()
+            pipe.move()
         
         if add_pipe:
-            user_score += 1
+            score += 1
+            for g in cur_genomes:
+                g.fitness += 5
             pipes.append(Pipe())
         for rem in removed_pipes:
             pipes.remove(rem)
-        if bird.y + bird.img.get_height() >= base.y:
-            pass
+        
+        for i, bird in enumerate(birds):
+            if bird.y + bird.img.get_height() >= base.y or bird.y < 0:
+                birds.pop(i)
+                cur_neural_networks.pop(i)
+                cur_genomes.pop(i)
         
         # bird.move() # Call the move method defined for a bird object
-        base.move() # Call the move method defined for a base object 
+        base.move() # Call the move method defined for a base object
 
-        draw_window(window, bird, pipes, base, user_score) # Draw the game window
+        if score > 100:
+            pickle.dump(cur_neural_networks[0], open("best_bird.pickle", "wb"))
+            play_game = False
+            break
+
+        draw_window(window, birds, pipes, base, score, CUR_GEN) # Draw the game window
+
+def run(config_file):
+    # Initialize the configuration file for the neural network & algorithm's parameters
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
+
+    population = neat.Population(config) # Sets the population of a generation
     
-    pygame.quit() # Quit the Pygame window
-    quit() # Quit the program
+    population.add_reporter(neat.StdOutReporter(True)) # Provides stats regarding the current generation and fitness
+    population.add_reporter(neat.StatisticsReporter())
+
+    winner = population.run(gen_training, 64)
+
 
 if __name__ == '__main__':
-    main()
-            
-
-
-
+    config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
+    # main()
+    run(config_file)
