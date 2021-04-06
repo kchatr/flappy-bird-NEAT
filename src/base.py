@@ -1,7 +1,9 @@
 import pygame
 import os
+
+from Game import Game
 # A Base class to handle the creation and logic of the base (i.e. the ground) in the game
-class Base:
+class Base(Game):
     GROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "ground.png"))) # Load in required images and double their size
 
     VELOCITY = 5 # The velocity of the moving base, which is equal to that of the pipes

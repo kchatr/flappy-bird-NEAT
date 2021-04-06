@@ -1,7 +1,9 @@
 # A Bird class to make the creation and handling of the bird and its behavior easier and more efficient using OOP
 import pygame
 import os
-class Bird:
+
+from Game import Game
+class Bird(Game):
     # Load in required images and double their size
     BIRD_ASSETS = [
     pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird1.png"))),
