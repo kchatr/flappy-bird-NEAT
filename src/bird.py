@@ -3,14 +3,13 @@ import pygame
 import os
 
 from Game import Game
+# Load in required images and double their size
+BIRD_ASSETS = [
+    pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bird1.png"))),
+    pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bird2.png"))),
+    pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bird3.png")))
+]
 class Bird(Game):
-    # Load in required images and double their size
-    BIRD_ASSETS = [
-    pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird1.png"))),
-    pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird2.png"))),
-    pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird3.png")))
-    ]
-
     ASSETS = BIRD_ASSETS # All the images of the bird
     MAX_ROTATION = 25 # The angle of tilt of the bird when it moves up and down (image is rotated 25 degrees)
     ROTATION_VEL = 20 # How much the bird will be rotated per frame (i.e. every time it moves)

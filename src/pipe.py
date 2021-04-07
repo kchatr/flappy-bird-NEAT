@@ -4,8 +4,8 @@ import random
 
 from Game import Game
 # A Pipe class that handles the creation and behaviour of the pipe, as well as collision mechanics.
+PIPE_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "pipe.png"))) # Load in required images and double their size
 class Pipe(Game):
-    PIPE_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "pipe.png"))) # Load in required images and double their size
     GAP = 200 # The gap in between the top and bottom pipe that the bird flies through
     VELOCITY = 5 # The pipes are what move backwards, not the bird moving forward - the bird doesn't actually have any horizontal velocity
 
