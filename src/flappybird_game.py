@@ -15,9 +15,16 @@ WIN_WIDTH = 575 # The width of the game window
 WIN_LENGTH = 800 # The length of the game window
 
 
-BACKGROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bg.png")))
+BACKGROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bg.png")))
 
 SCORE_FONT = pygame.font.SysFont("comicsans", 50)
+
+def draw_window_start(window):
+    window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
+    score_display = pygame.font.SysFont("comicsans", 30).render(f"Please press 1, 2, or 3 on your keyboard.", 1, (255, 255, 255)) # Renders the score of either the user or the AI in the game state
+    window.blit(score_display, (100, 10)) # Draws the score onto the game window
+
+    pygame.display.update() # Update the game window's display
 
 # Method to draw the game window
 def draw_window(window, birds, pipes, base, score, cur_gen):
@@ -41,11 +48,136 @@ def draw_window(window, birds, pipes, base, score, cur_gen):
 
     pygame.display.update() # Update the game window's display
 
-def classic_game():
-    pass
+def draw_window_classic(window, bird, pipes, base, score):
+    window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
 
-def ai_game(genome, config):
-    pass
+    score_display = SCORE_FONT.render(f"Score: {score}", 1, (255, 255, 255))
+    window.blit(score_display, (WIN_WIDTH - 10 - score_display.get_width(), 10))
+
+    # Pipes is a list storing the top and bottom pipe, and this draws them to the game window using the previously defined draw method
+    for pipe in pipes:
+        pipe.draw(window)
+    
+    base.draw(window) # Draw the base (the ground) using the previously defined draw method
+
+    bird.draw(window) # Draw the bird using the previously defined draw method
+
+    pygame.display.update() # Update the display
+
+def classic_game():
+    bird = Bird(230, 350) # Initialize a bird object
+    base = Base()
+    pipes = [Pipe(WIN_WIDTH)]
+    window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH)) # Initialize the window
+    clock = pygame.time.Clock() # Sets the frame rate i.e. the tick rate of the game
+    user_score = 0
+
+    play_game = True # A boolean variable that tracks whether the game should continue to run
+
+    while play_game:
+        clock.tick(30) # A maximum of 30 ticks every second
+        # For each event (i.e. a keyboard trigger, mouse click, etc.):
+        for event in pygame.event.get():
+            # If the user hits the X in the Pygame window, exit the game and terminate the program
+            if event.type == pygame.QUIT:
+                play_game = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    bird.jump()
+        
+        add_pipe = False # Keeps track of whether or not to add a new pipe to the game window
+        removed_pipes = [] # A list to store the pipes that need to be removed
+        # Call the move method defined for each pipe object that currently exists
+        # Pipes is a list storing the top and bottom pipe, and this draws them to the game window using the previously defined draw method
+        for pipe in pipes:
+            if pipe.collide(bird) == True or (bird.y + bird.img.get_height() >= base.y or bird.y < 0):
+                play_game = False
+            else:
+                # If the pipe is now completely off the screen, add it to the list of pipes to be removed
+                if pipe.x + pipe.PIPE_TOP.get_width() < 0:
+                    removed_pipes.append(pipe)
+            
+                # If the bird has passed the pipe and the pipe has not been passed before, we need to draw a new pipe
+                if not pipe.bird_passed and pipe.x < bird.x:
+                    pipe.bird_passed = True
+                    add_pipe = True
+                
+                pipe.move()
+        
+        if add_pipe:
+            user_score += 1
+            pipes.append(Pipe(WIN_WIDTH))
+        for rem in removed_pipes:
+            pipes.remove(rem)
+        if bird.y + bird.img.get_height() >= base.y:
+            pass
+        
+        bird.move() # Call the move method defined for a bird object
+        base.move() # Call the move method defined for a base object 
+
+        draw_window_classic(window, bird, pipes, base, user_score) # Draw the game window
+
+def ai_game():
+    trained_bird = open("C:\Projects\Flappy-Bird-NEAT\\best_bird.pickle", "rb")
+    bird_neural_network = pickle.load(trained_bird)
+    bird = Bird(230, 350)
+    base = Base()
+    pipes = [Pipe(WIN_WIDTH)]
+    window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH)) # Initialize the window
+    clock = pygame.time.Clock() # Sets the frame rate i.e. the tick rate of the game
+    user_score = 0
+
+    play_game = True # A boolean variable that tracks whether the game should continue to run
+
+    while play_game:
+        clock.tick(30) # A maximum of 30 ticks every second
+        # For each event (i.e. a keyboard trigger, mouse click, etc.):
+        for event in pygame.event.get():
+            # If the user hits the X in the Pygame window, exit the game and terminate the program
+            if event.type == pygame.QUIT:
+                play_game = False
+        
+        pipe_index = 0
+        if len(pipes) > 1 and bird.x > pipes[0].x + pipes[0].PIPE_TOP.get_width():
+            pipe_index = 1
+        
+        bird.move()
+        
+        nn_output = bird_neural_network.activate((bird.y, abs(bird.y - pipes[pipe_index].height), abs(bird.y - pipes[pipe_index].bottom_pipe)))
+        if nn_output[0] > 0.5:
+            bird.jump()
+
+        
+        add_pipe = False # Keeps track of whether or not to add a new pipe to the game window
+        removed_pipes = [] # A list to store the pipes that need to be removed
+        # Call the move method defined for each pipe object that currently exists
+        # Pipes is a list storing the top and bottom pipe, and this draws them to the game window using the previously defined draw method
+        for pipe in pipes:
+            if pipe.collide(bird) == True or (bird.y + bird.img.get_height() >= base.y or bird.y < 0):
+                play_game = False
+            else:
+                # If the pipe is now completely off the screen, add it to the list of pipes to be removed
+                if pipe.x + pipe.PIPE_TOP.get_width() < 0:
+                    removed_pipes.append(pipe)
+            
+                # If the bird has passed the pipe and the pipe has not been passed before, we need to draw a new pipe
+                if not pipe.bird_passed and pipe.x < bird.x:
+                    pipe.bird_passed = True
+                    add_pipe = True
+                
+                pipe.move()
+        
+        if add_pipe:
+            user_score += 1
+            pipes.append(Pipe(WIN_WIDTH))
+        for rem in removed_pipes:
+            pipes.remove(rem)
+        if bird.y + bird.img.get_height() >= base.y:
+            pass
+
+        base.move() # Call the move method defined for a base object 
+
+        draw_window_classic(window, bird, pipes, base, user_score) # Draw the game window
 
 CUR_GEN = 0
 # The main method which acts as a controller for the rest of the program
@@ -129,7 +261,7 @@ def gen_training(genomes, config):
             score += 1
             for g in cur_genomes:
                 g.fitness += 5
-            pipes.append(Pipe())
+            pipes.append(Pipe(WIN_WIDTH))
         for rem in removed_pipes:
             pipes.remove(rem)
         
@@ -160,22 +292,65 @@ def run(config_file):
 
     winner = population.run(gen_training, 64)
 
-def main():
+def user_input():
     print("This is an implementation of flappy bird!")
     print("There are 3 modes: Play (1); AI (2); Train (3).")
-    choice = int(input("Please enter the number corresponding to your choice now.\n"))
-    assert(choice in [1, 2, 3])
+    usr_input = int(input("Please enter the number corresponding to your choice now.\n"))
+    assert(usr_input in [1, 2, 3])
+    choice = usr_input
+
+
+def main():
+    window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH)) # Initialize the window
+    # print("This is an implementation of flappy bird!")
+    # print("There are 3 modes: Play (1); AI (2); Train (3).")
+    # choice = int(input("Please enter the number corresponding to your choice now.\n"))
+    # assert(choice in [1, 2, 3])
     
-    if choice == 1:
-        pass
-    elif choice == 2:
-        pass
-    elif choice == 3:
-        config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
-        run(config_file) 
+    draw_window_start(window)
+    choice = False
+    while not choice:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                choice = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    choice = True
+                    classic_game()
+                elif event.key == pygame.K_2:
+                    choice = True
+                    ai_game()
+                elif event.key == pygame.K_3:
+                    choice = True
+                    config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
+                    run(config_file) 
+
+
+        # if choice == 1:
+        #     window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH))
+        #     classic_game()
+        # elif choice == 2:
+        #     pass
+        # elif choice == 3:
+        #     window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH))
+        #     config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
+        #     run(config_file) 
+    
+    # if choice == 1:
+    #     classic_game()
+    # elif choice == 2:
+    #     pass
+    # else:
+    #     config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
+    #     run(config_file) 
+
+        
 
 
 if __name__ == '__main__':
-    config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
+    #FIXME INPUT FROM CLI DOES NOT CAUSE PYGAME WINDOW TO OPEN TO USER --> ISSUE WITH METHOD OF INPUT; TRY PYGAME INPUT
+    # user_input()
+    # config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
     main()
-    run(config_file)
+    
+    # run(config_file)
