@@ -1,6 +1,10 @@
 # Asset Files
 /imgs
 
+# src Files
+tempCodeRunnerFile.py
+neatconfig.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
