@@ -21,10 +21,52 @@ SCORE_FONT = pygame.font.SysFont("comicsans", 50)
 
 def draw_window_start(window):
     window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
+    
+    intro = pygame.font.SysFont("comicsans", 26).render(f"This is classic Flappy Bird recreated, with a few extra dimensions!", 1, (255, 255, 255)) # Renders the score of either the user or the AI in the game state
+    intro_rect = intro.get_rect()
+    intro_rect.center = (WIN_WIDTH / 2, WIN_LENGTH / 2 - 300)
+    window.blit(intro, intro_rect)
+
+    option_1 = pygame.font.SysFont("comicsans", 28).render(f"1) PLAY - Play the Game", 1, (255, 255, 255)) 
+    option_1_rect = option_1.get_rect()
+    option_1_rect.center = (WIN_WIDTH / 2 - 5, WIN_LENGTH / 2 - 150)
+    window.blit(option_1, option_1_rect)
+
+    option_2 = pygame.font.SysFont("comicsans", 28).render(f"2) LEARN - Witness the power of neural networks", 1, (255, 255, 255)) 
+    option_2_rect = option_2.get_rect()
+    option_2_rect.center = (WIN_WIDTH / 2 - 10, WIN_LENGTH / 2 - 125)
+    window.blit(option_2, option_2_rect)
+
+    
+    option_3 = pygame.font.SysFont("comicsans", 28).render(f"3) TRAIN - Train an invincible bird with AI", 1, (255, 255, 255)) 
+    option_3_rect = option_3.get_rect()
+    option_3_rect.center = (WIN_WIDTH / 2 - 15, WIN_LENGTH / 2 - 100)
+    window.blit(option_3, option_3_rect)
+
     score_display = pygame.font.SysFont("comicsans", 30).render(f"Please press 1, 2, or 3 on your keyboard.", 1, (255, 255, 255)) # Renders the score of either the user or the AI in the game state
-    window.blit(score_display, (100, 10)) # Draws the score onto the game window
+    score_display_rect = score_display.get_rect()
+    score_display_rect.center = (WIN_LENGTH / 2 - 100, WIN_LENGTH / 2)
+    window.blit(score_display, score_display_rect) # Draws the score onto the game window
 
     pygame.display.update() # Update the game window's display
+
+def draw_window_end(window):
+    window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
+    end = pygame.font.SysFont("comicsans", 24).render(f"Game over! Press 'P' to play again and 'Q' to quit.", 1, (255, 255, 255)) # Renders the score of either the user or the AI in the game state
+    end_rect = end.get_rect()
+    end_rect.center = (WIN_WIDTH / 2, WIN_LENGTH / 2 - 100)
+    window.blit(end, end_rect)
+
+    choice = False
+    while not choice:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                choice = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    main()
+                else:
+                    pygame.quit()
 
 # Method to draw the game window
 def draw_window(window, birds, pipes, base, score, cur_gen):
@@ -116,6 +158,9 @@ def classic_game():
         base.move() # Call the move method defined for a base object 
 
         draw_window_classic(window, bird, pipes, base, user_score) # Draw the game window
+    
+    window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH)) # Initialize the window
+    draw_window_end(window)
 
 def ai_game():
     trained_bird = open("C:\Projects\Flappy-Bird-NEAT\\best_bird.pickle", "rb")
