@@ -1,4 +1,4 @@
-# A Bird class to make the creation and handling of the bird and its behavior easier and more efficient using OOP
+# Import required libraries
 import pygame
 import os
 
@@ -9,6 +9,7 @@ BIRD_ASSETS = [
     pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bird2.png"))),
     pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bird3.png")))
 ]
+# A Bird class to make the creation and handling of the bird and its behavior easier and more efficient using OOP
 class Bird(Game):
     ASSETS = BIRD_ASSETS # All the images of the bird
     MAX_ROTATION = 25 # The angle of tilt of the bird when it moves up and down (image is rotated 25 degrees)

@@ -1,3 +1,4 @@
+# Import required libraries
 import pygame
 import os
 
@@ -5,11 +6,13 @@ from Game import Game
 # A Base class to handle the creation and logic of the base (i.e. the ground) in the game
 GROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "ground.png"))) # Load in required images and double their size
 
+# A Base class to make the creation and handling of the base (i.e. ground) and its behavior easier and more efficient using OOP
 class Base(Game):
     VELOCITY = 5 # The velocity of the moving base, which is equal to that of the pipes
     WIDTH = GROUND_ASSET.get_width() # THe width of the base
     IMG = GROUND_ASSET # Alias for the image of the base
 
+    # The constructor for the Base class, with the object passed as an implicit paramater.
     def __init__(self):
         self.y = 730 # The y-position of the base
         self.x1 = 0 # The x position of the first base
@@ -31,6 +34,7 @@ class Base(Game):
         if self.x2 + self.WIDTH < 0:
             self.x2 = self.x1 + self.WIDTH
     
+    # Draw both bases onto the game window to ensure it appears as an infinite scroller.
     def draw(self, window):
         window.blit(self.IMG, (self.x1, self.y))
         window.blit(self.IMG, (self.x2, self.y))
