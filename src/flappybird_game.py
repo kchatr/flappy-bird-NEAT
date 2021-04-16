@@ -27,6 +27,11 @@ def draw_window_start(window):
     intro_rect.center = (WIN_WIDTH / 2, WIN_LENGTH / 2 - 300)
     window.blit(intro, intro_rect)
 
+    menu = pygame.font.SysFont("comicsans", 30).render(f"Press M to open the game menu.", 1, (255, 255, 255)) # Renders the score of either the user or the AI in the game state
+    menu_rect = menu.get_rect()
+    menu_rect.center = (WIN_WIDTH / 2, WIN_LENGTH / 2 - 240)
+    window.blit(menu, menu_rect)
+
     option_1 = pygame.font.SysFont("comicsans", 28).render(f"1) PLAY - Play the Game", 1, (255, 255, 255)) 
     option_1_rect = option_1.get_rect()
     option_1_rect.center = (WIN_WIDTH / 2 - 5, WIN_LENGTH / 2 - 150)
@@ -43,12 +48,50 @@ def draw_window_start(window):
     option_3_rect.center = (WIN_WIDTH / 2 - 15, WIN_LENGTH / 2 - 100)
     window.blit(option_3, option_3_rect)
 
-    score_display = pygame.font.SysFont("comicsans", 30).render(f"Please press 1, 2, or 3 on your keyboard.", 1, (255, 255, 255)) # Renders the score of either the user or the AI in the game state
+    score_display = pygame.font.SysFont("comicsans", 30).render(f"Please press 1, 2, or 3 on your keyboard.", 1, (255, 255, 255)) 
     score_display_rect = score_display.get_rect()
     score_display_rect.center = (WIN_LENGTH / 2 - 100, WIN_LENGTH / 2)
     window.blit(score_display, score_display_rect) # Draws the score onto the game window
 
     pygame.display.update() # Update the game window's display
+
+def draw_menu(window):
+
+    window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
+    menu = pygame.font.SysFont("comicsans", 30).render(f"1) Your turn! Press SPACE to make the bird jump vertically.", 1, (255, 255, 255)) # Renders text to the game window
+    window.blit(menu, (30, 50)) # Draws the score onto the game window
+
+    menu = pygame.font.SysFont("comicsans", 30).render(f"Avoid the pipes and the ground!", 1, (255, 255, 255)) # Renders text to the game window
+    window.blit(menu, (30, 70)) # Draws the score onto the game window
+
+    menu = pygame.font.SysFont("comicsans", 30).render(f"2) Learn how an AI does it!", 1, (255, 255, 255)) # Renders text to the game window
+    window.blit(menu, (30, 120)) # Draws the score onto the game window
+
+    menu = pygame.font.SysFont("comicsans", 30).render(f"Press Q at any time to quit.", 1, (255, 255, 255)) # Renders text to the game window
+    window.blit(menu, (30, 140)) # Draws the score onto the game window
+
+    menu = pygame.font.SysFont("comicsans", 30).render(f"3) Train your own AI and watch those birds go!", 1, (255, 255, 255)) # Renders text to the game window
+    window.blit(menu, (30, 190)) # Draws the score onto the game window
+    
+    menu = pygame.font.SysFont("comicsans", 30).render(f"Press Q at any time to quit.", 1, (255, 255, 255)) # Renders text to the game window
+    window.blit(menu, (30, 210)) # Draws the score onto the game window
+
+    menu = pygame.font.SysFont("comicsans", 32).render(f"Press SPACE to go to the home screen.", 1, (255, 255, 255)) # Renders text to the game window
+    window.blit(menu, (30, 260)) # Draws the score onto the game window
+
+    pygame.display.update() # Update the game window's display
+
+    choice = False
+    while not choice:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                choice = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    main()
+                else:
+                    main()
+
 
 def draw_window_end(window):
     window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
@@ -345,20 +388,8 @@ def run(config_file):
 
     winner = population.run(gen_training, 64)
 
-def user_input():
-    print("This is an implementation of flappy bird!")
-    print("There are 3 modes: Play (1); AI (2); Train (3).")
-    usr_input = int(input("Please enter the number corresponding to your choice now.\n"))
-    assert(usr_input in [1, 2, 3])
-    choice = usr_input
-
-
 def main():
     window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH)) # Initialize the window
-    # print("This is an implementation of flappy bird!")
-    # print("There are 3 modes: Play (1); AI (2); Train (3).")
-    # choice = int(input("Please enter the number corresponding to your choice now.\n"))
-    # assert(choice in [1, 2, 3])
     
     draw_window_start(window)
     choice = False
@@ -377,33 +408,13 @@ def main():
                     choice = True
                     config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
                     run(config_file) 
-
-
-        # if choice == 1:
-        #     window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH))
-        #     classic_game()
-        # elif choice == 2:
-        #     pass
-        # elif choice == 3:
-        #     window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH))
-        #     config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
-        #     run(config_file) 
-    
-    # if choice == 1:
-    #     classic_game()
-    # elif choice == 2:
-    #     pass
-    # else:
-    #     config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
-    #     run(config_file) 
-
-        
-
+                elif event.key == pygame.K_m:
+                    choice = True
+                    draw_menu(window)
 
 if __name__ == '__main__':
-    #FIXME INPUT FROM CLI DOES NOT CAUSE PYGAME WINDOW TO OPEN TO USER --> ISSUE WITH METHOD OF INPUT; TRY PYGAME INPUT
-    # user_input()
-    # config_file = os.path.join(os.path.dirname(__file__), "neatconfig.txt")
-    main()
-    
-    # run(config_file)
+    try:
+        main()
+    except:
+        print("An error occurred. Restarting program...")
+        main()
