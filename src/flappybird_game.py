@@ -52,10 +52,12 @@ def draw_window_start(window):
 
 def draw_window_end(window):
     window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
-    end = pygame.font.SysFont("comicsans", 24).render(f"Game over! Press 'P' to play again and 'Q' to quit.", 1, (255, 255, 255)) # Renders the score of either the user or the AI in the game state
+    end = pygame.font.SysFont("comicsans", 24).render(f"Game over! Press 'SPACE' to play again and any key to quit.", 1, (255, 255, 255)) # Renders the score of either the user or the AI in the game state
     end_rect = end.get_rect()
     end_rect.center = (WIN_WIDTH / 2, WIN_LENGTH / 2 - 100)
     window.blit(end, end_rect)
+
+    pygame.display.update() # Update the game window's display
 
     choice = False
     while not choice:
@@ -63,7 +65,7 @@ def draw_window_end(window):
             if event.type == pygame.QUIT:
                 choice = True
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
+                if event.key == pygame.K_SPACE:
                     main()
                 else:
                     pygame.quit()
@@ -319,10 +321,10 @@ def gen_training(genomes, config):
         # bird.move() # Call the move method defined for a bird object
         base.move() # Call the move method defined for a base object
 
-        if score > 100:
-            pickle.dump(cur_neural_networks[0], open("best_bird.pickle", "wb"))
-            play_game = False
-            break
+        # if score > 100:
+        #     pickle.dump(cur_neural_networks[0], open("best_bird.pickle", "wb"))
+        #     play_game = False
+        #     break
 
         draw_window(window, birds, pipes, base, score, CUR_GEN) # Draw the game window
 
