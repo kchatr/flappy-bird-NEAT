@@ -183,6 +183,9 @@ def ai_game():
             # If the user hits the X in the Pygame window, exit the game and terminate the program
             if event.type == pygame.QUIT:
                 play_game = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    pygame.quit()
         
         pipe_index = 0
         if len(pipes) > 1 and bird.x > pipes[0].x + pipes[0].PIPE_TOP.get_width():
@@ -261,6 +264,9 @@ def gen_training(genomes, config):
                 play_game = False
                 pygame.quit() # Quit the Pygame window
                 quit() # Quit the program
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    pygame.quit()
         
         pipe_index = 0 # The index of the pipe to be inputted into the neural network
         # If the birds list is not empty, set pipe_index to 1 (the second pipe in the list) if the bird has already passed the first pipe
