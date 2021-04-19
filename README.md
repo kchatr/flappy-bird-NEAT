@@ -1,8 +1,8 @@
 ## Program Details
-Author: Kaushik Chatterjee (https://linkedin.com/in/kchatr)
-Date: 2021/03/30
-Version: 1.19
-Python 3.6.8 :: Anaconda, Inc.
+Author: Kaushik Chatterjee (https://linkedin.com/in/kchatr)  
+Date: 2021/03/30  
+Version: 1.19  
+Python 3.6.8 :: Anaconda, Inc.  
 
 ## Description
 This is a recreation of the classic (and infamous) Flappy Bird game in Python!
