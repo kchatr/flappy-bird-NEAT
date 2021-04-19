@@ -1,5 +1,5 @@
 ## Program Details
-Author: Kaushik Chatterjee (https://github.com/kchatr)
+Author: Kaushik Chatterjee (https://linkedin.com/in/kchatr)
 Date: 2021/03/30
 Version: 1.19
 Python 3.6.8 :: Anaconda, Inc.
@@ -30,4 +30,4 @@ The user cannot implement custom keybinds for actions and can only use the keybo
 Additionally, the user can't customize the bird or the background unless they wish to modify the source code.
 
 ## Known Errors
-There are no known errors
+There are no known errors, except for the fact that using the pygame exit function can trigger an exception.
