@@ -1,3 +1,11 @@
+"""
+A large part of this program was inspired by Tech with Tim's GitHub repo https://github.com/techwithtim/NEAT-Flappy-Bird and his video series.
+It has been modified and added onto significantly, but the assets and and core logic are motivated from TWT's tutorial.
+No line of code has been written, however, without my explicit understanding of what it does and why it is there.
+I hope you enjoy my reanimation of a classic game :D
+- Kaushik Chatterjee (kchatr)
+"""
+
 import pygame
 import neat
 import time
@@ -417,6 +425,7 @@ def gen_training(genomes, config):
         draw_window(window, birds, pipes, base, score, CUR_GEN) # Draw the game window
 
 # Initializes the neural network and the parameters for the NEAT algorithm
+# This was created by following the NEAT libraries official documentation, 
 def run(config_file):
     # Initialize the configuration file for the neural network & algorithm's parameters
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
