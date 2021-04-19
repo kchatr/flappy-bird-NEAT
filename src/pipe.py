@@ -1,11 +1,14 @@
 # Import required libraries
 import pygame
 import os
+from os.path import dirname, abspath
 import random
 
 from Game import Game
+
+imgs_path = dirname(dirname(abspath(__file__)))
 # A Pipe class that handles the creation and behaviour of the pipe, as well as collision mechanics.
-PIPE_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "pipe.png"))) # Load in required images and double their size
+PIPE_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "pipe.png"))) # Load in required images and double their size
 # A Pipe class to make the creation and handling of the pipes and their behavior easier and more efficient using OOP
 class Pipe(Game):
     GAP = 200 # The gap in between the top and bottom pipe that the bird flies through

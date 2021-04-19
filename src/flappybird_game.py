@@ -10,6 +10,7 @@ import pygame
 import neat
 import time
 import os
+from os.path import dirname, abspath
 import random
 import pickle
 
@@ -18,14 +19,16 @@ from pipe import Pipe
 from base import Base
 
 pygame.font.init()
+SCORE_FONT = pygame.font.SysFont("comicsans", 50) # The font for the score
 
 WIN_WIDTH = 575 # The width of the game window
 WIN_LENGTH = 800 # The length of the game window
 
+imgs_path = dirname(dirname(abspath(__file__)))
 
-BACKGROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bg.png"))) # Load in the game's background
+BACKGROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "bg.png"))) # Load in the game's background
 
-SCORE_FONT = pygame.font.SysFont("comicsans", 50) # The font for the score
+
 
 # A method that draws the Start window of the game
 def draw_window_start(window):
@@ -71,7 +74,7 @@ def draw_menu(window):
 
     # These sequential statements create and render the desired text to the Pygame window.
     # They are initialized with the appropriate font and size to the center of the screen
-    menu = pygame.font.SysFont("comicsans", 30).render(f"1) Your turn! Press SPACE to make the bird jump vertically.", 1, (255, 255, 255)) 
+    menu = pygame.font.SysFont("comicsans", 27).render(f"1) Your turn! Press SPACE to make the bird jump vertically.", 1, (255, 255, 255)) 
     window.blit(menu, (30, 50)) 
 
     menu = pygame.font.SysFont("comicsans", 30).render(f"Avoid the pipes and the ground!", 1, (255, 255, 255)) 

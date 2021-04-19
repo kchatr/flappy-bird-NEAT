@@ -1,13 +1,16 @@
 # Import required libraries
 import pygame
 import os
+from os.path import dirname, abspath
 
 from Game import Game
 # Load in required images and double their size
+imgs_path = dirname(dirname(abspath(__file__)))
+
 BIRD_ASSETS = [
-    pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bird1.png"))),
-    pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bird2.png"))),
-    pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "bird3.png")))
+    pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "bird1.png"))),
+    pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "bird2.png"))),
+    pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "bird3.png")))
 ]
 # A Bird class to make the creation and handling of the bird and its behavior easier and more efficient using OOP
 class Bird(Game):

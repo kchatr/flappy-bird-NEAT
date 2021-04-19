@@ -1,10 +1,13 @@
 # Import required libraries
 import pygame
 import os
+from os.path import dirname, abspath
 
 from Game import Game
-# A Base class to handle the creation and logic of the base (i.e. the ground) in the game
-GROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join("C:\Projects\Flappy-Bird-NEAT\imgs", "ground.png"))) # Load in required images and double their size
+
+imgs_path = dirname(dirname(abspath(__file__)))
+
+GROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "ground.png"))) # Load in required images and double their size
 
 # A Base class to make the creation and handling of the base (i.e. ground) and its behavior easier and more efficient using OOP
 class Base(Game):
