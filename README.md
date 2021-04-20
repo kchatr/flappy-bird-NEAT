@@ -4,6 +4,13 @@ Date: 2021/03/30
 Version: 1.19  
 Python 3.6.8 :: Anaconda, Inc.  
 
+## Requirements
+The user needs Python 3.6.8 and both the Pygame and the NEAT-Python library installed.
+This is completed using:
+```
+pip install -r requirements.txt
+```
+
 ## Description
 This is a recreation of the classic (and infamous) Flappy Bird game in Python!
 It was created using PyGame and uses the original sprites and assets in the game.
