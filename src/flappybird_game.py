@@ -6,6 +6,7 @@ I hope you enjoy my reanimation of a classic game :D
 - Kaushik Chatterjee (kchatr)
 """
 
+# Import required libraries
 import pygame
 import neat
 import time
@@ -18,6 +19,7 @@ from bird import Bird
 from pipe import Pipe
 from base import Base
 
+
 pygame.font.init()
 SCORE_FONT = pygame.font.SysFont("comicsans", 50) # The font for the score
 
@@ -26,7 +28,7 @@ WIN_LENGTH = 800 # The length of the game window
 
 imgs_path = dirname(dirname(abspath(__file__)))
 
-BACKGROUND_ASSET = pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "bg.png"))) # Load in the game's background
+BACKGROUND_ASSET = random.choice([pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "bg.png"))), pygame.transform.scale2x(pygame.image.load(os.path.join(imgs_path, "imgs", "bg_night.jpeg")))]) # Load in the game's background
 
 
 
@@ -113,7 +115,7 @@ def draw_menu(window):
                     main()
 
 
-# Creates the ending window when the game end
+# Creates the ending window when the game ends (i.e. the user's bird crashes)
 def draw_window_end(window):
     window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
     
@@ -141,7 +143,7 @@ def draw_window_end(window):
                 else:
                     pygame.quit()
 
-# Method to draw the game window for the training of the birds.
+# Method to draw the game window for the birds AI to be trained
 def draw_window(window, birds, pipes, base, score, cur_gen):
     window.blit(BACKGROUND_ASSET, (0, 0)) # The blit method actually 'draws' the background image to the game window
 
@@ -180,7 +182,7 @@ def draw_window_classic(window, bird, pipes, base, score):
 
     pygame.display.update() # Update the display
 
-# Initialize a classic game, which is played by the user
+# Initialize a classic game, that is played by the user and analogous to the original game itself (i.e. the PLAY option)
 def classic_game():
     bird = Bird(230, 350) # Initialize a bird object
     base = Base() # Initialize the base object
@@ -243,6 +245,7 @@ def classic_game():
     window = pygame.display.set_mode((WIN_WIDTH, WIN_LENGTH)) # Initialize the window
     draw_window_end(window)
 
+# A game played by a previously trained AI bird (i.e. the LEARN option)
 def ai_game():
     trained_bird = open("C:\Projects\Flappy-Bird-NEAT\\best_bird.pickle", "rb") # Open the save neural network file
     bird_neural_network = pickle.load(trained_bird) # Load in the deserialized object using pickle
@@ -320,7 +323,7 @@ def ai_game():
 
 # The current generation of the birds being trained
 CUR_GEN = 1
-# The main method which acts as a controller for the rest of the program
+# A game where the birds are trained and the user can view the training (i.e. the TRAIN option)
 def gen_training(genomes, config):
     global CUR_GEN # Declare global variables
     cur_neural_networks = [] # A list that stores all the neural networks for each bird being trained
@@ -367,6 +370,8 @@ def gen_training(genomes, config):
             run = False
             break
         
+        # A for loop to iterate through the birds and modify their fitness
+        # Computes and stores the neural network's output to decide if a bird should jump
         for x, bird in enumerate(birds):
             cur_genomes[x].fitness += 0.1
             bird.move()
@@ -449,6 +454,7 @@ def main():
     choice = False # Boolean variable that tracks whether the user has made a choice or not
     
     # While the user has not made a choice:
+    # Allow the user to press the appropriate key to make their selection and calling the corresponding method
     while not choice:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -472,6 +478,8 @@ def main():
 if __name__ == '__main__':
     try:
         main()
+    except pygame.error:
+        quit()
     except:
         print("An error occurred. Restarting program...")
         main()
