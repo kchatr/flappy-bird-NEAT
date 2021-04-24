@@ -322,13 +322,14 @@ def ai_game():
         draw_window_classic(window, bird, pipes, base, bird_score) # Draw the game window
 
 # The current generation of the birds being trained
-CUR_GEN = 1
+CUR_GEN = 0
 # A game where the birds are trained and the user can view the training (i.e. the TRAIN option)
 def gen_training(genomes, config):
     global CUR_GEN # Declare global variables
     cur_neural_networks = [] # A list that stores all the neural networks for each bird being trained
     cur_genomes = [] # A list that stores the fitness for all the birds
     birds = [] # A list that stores all the birds 
+    CUR_GEN += 1
 
     # Iterate through genomes and initialize the birds, along with their fitness and neural network
     for _, g in genomes:
